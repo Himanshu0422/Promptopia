@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-
+import { useEffect, useState } from "react";
 import PromptCard from "./PromptCard";
 
 const PromptCardList = ({ data, handleTagClick }) => {
@@ -20,24 +19,28 @@ const PromptCardList = ({ data, handleTagClick }) => {
 
 const Feed = () => {
   const [allPosts, setAllPosts] = useState([]);
-
   const [searchText, setSearchText] = useState("");
   const [searchTimeout, setSearchTimeout] = useState(null);
   const [searchedResults, setSearchedResults] = useState([]);
 
-  const fetchPosts = async () => {
-    const response = await fetch("/api/prompt");
-    const data = await response.json();
-
-    setAllPosts(data);
-  };
-
+  // Fetch posts on component mount (no session required)
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    const fetchPosts = async () => {
+      try {
+        const response = await fetch("/api/prompt");
+        const data = await response.json();
+        setAllPosts(data);
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
 
-  const filterPrompts = (searchtext) => {
-    const regex = new RegExp(searchtext, "i");
+    fetchPosts();
+  }, []); // Empty dependency array ensures this runs only once on mount
+
+  // Filter posts based on search text
+  const filterPrompts = (searchText) => {
+    const regex = new RegExp(searchText, "i");
     return allPosts.filter(
       (item) =>
         regex.test(item.creator.username) ||
@@ -46,11 +49,11 @@ const Feed = () => {
     );
   };
 
+  // Handle search input change with debounce
   const handleSearchChange = (e) => {
     clearTimeout(searchTimeout);
     setSearchText(e.target.value);
 
-    // debounce method
     setSearchTimeout(
       setTimeout(() => {
         const searchResult = filterPrompts(e.target.value);
@@ -59,34 +62,44 @@ const Feed = () => {
     );
   };
 
+  // Handle tag click to search for specific tags
   const handleTagClick = (tagName) => {
     setSearchText(tagName);
-
     const searchResult = filterPrompts(tagName);
     setSearchedResults(searchResult);
   };
 
+  if (!allPosts.length) {
+    return (
+      <div className="flex justify-center items-center h-full text-lg text-gray-500 bg-gray-100 p-8 rounded-lg">
+        No posts available at the moment
+      </div>
+    );
+  }
+
   return (
-    <section className='feed'>
-      <form className='relative w-full flex-center'>
+    <section className="feed">
+      <form className="relative w-full flex-center">
         <input
-          type='text'
-          placeholder='Search for a tag or a username'
+          type="text"
+          placeholder="Search for a tag or a username"
           value={searchText}
           onChange={handleSearchChange}
           required
-          className='search_input peer'
+          className="search_input peer"
         />
       </form>
 
-      {/* All Prompts */}
       {searchText ? (
         <PromptCardList
           data={searchedResults}
           handleTagClick={handleTagClick}
         />
       ) : (
-        <PromptCardList data={allPosts} handleTagClick={handleTagClick} />
+        <PromptCardList
+          data={allPosts}
+          handleTagClick={handleTagClick}
+        />
       )}
     </section>
   );
