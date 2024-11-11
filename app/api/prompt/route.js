@@ -3,12 +3,19 @@ import { connectToDB } from "@utils/database";
 
 export const GET = async (request) => {
     try {
-        await connectToDB()
+        await connectToDB();
+        
+        console.log("Connected to DB in production"); // Debug connection
 
-        const prompts = await Prompt.find({}).populate('creator')
+        const prompts = await Prompt.find({}).populate('creator');
+        console.log("Fetched prompts:", prompts); // Debug data retrieval
 
-        return new Response(JSON.stringify(prompts), { status: 200 })
+        return new Response(JSON.stringify(prompts), {
+            status: 200,
+            headers: { "Cache-Control": "no-store" }
+        });
     } catch (error) {
-        return new Response("Failed to fetch all prompts", { status: 500 })
+        console.error("Error fetching prompts:", error); // Debug error
+        return new Response("Failed to fetch all prompts", { status: 500 });
     }
-} 
+};
