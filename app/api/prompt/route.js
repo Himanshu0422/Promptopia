@@ -19,7 +19,7 @@ export const GET = async (request) => {
                 "image": "https://lh3.googleusercontent.com/a/ACg8ocIWRpanxXHILGLuMqYOxB6B_7Wgd3v52LPFTGwBg24ONV2V3g=s96-c",
                 "__v": 0
               },
-              "prompt": "fourth",
+              "prompt": "Himanshu",
               "tag": "fourth",
               "__v": 0
             },
