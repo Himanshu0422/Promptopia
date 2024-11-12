@@ -27,7 +27,7 @@ const Feed = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch("/api/prompt");
+        const response = await fetch("https://8d42-122-173-30-173.ngrok-free.app/api/prompt");
         const data = await response.json();
         setAllPosts(data);
       } catch (error) {
