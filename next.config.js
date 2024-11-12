@@ -13,7 +13,12 @@ const nextConfig = {
         topLevelAwait: true,
       }
       return config
-    }
+    },
+    api: {
+      responseCache: {
+        enable: false,
+      },
+    },
   }
   
   module.exports = nextConfig
